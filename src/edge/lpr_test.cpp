@@ -1,10 +1,19 @@
-#include "lpr_alg.h"
 #include <iostream>
 #include <fstream>
 #include <string>
 #include <time.h>
+
+#include <libyuv.h>
+#include "jpeg_codec.h"
+
 using namespace std;
 
+int main()
+{
+    
+}
+
+/*
 int main(int argc, char ** argv)
 {
     if(argc < 2)
@@ -47,3 +56,4 @@ int main(int argc, char ** argv)
     
     return 0;
 }
+*/

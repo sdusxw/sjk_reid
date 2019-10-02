@@ -1,25 +1,24 @@
 include_directories(
 	${SOLUTION_INCLUDE_DIRS}
+    /usr/local/include
 )
 link_directories(
     ${src_dir}/lib
+    /usr/local/lib
 )
 
-add_executable(lpr_edge
-	rv_anpr_interface.h
-	lpr_alg.h
-	lpr_alg.cpp
-	lpr_edge.cpp
-)
+#add_library(lpr_alg
+#	rv_anpr_interface.h
+#	lpr_alg.h
+#	lpr_alg.cpp
+#)
 
 add_executable(lpr_test
-	rv_anpr_interface.h
-	lpr_alg.h
-	lpr_alg.cpp
+#	lpr_alg.h
 	lpr_test.cpp
 )
 
-target_link_libraries(lpr_edge pthread common )
+#target_link_libraries(lpr_alg pthread common )
 
-target_link_libraries(lpr_test pthread common )
+target_link_libraries(lpr_test pthread common jpeg yuv)
 

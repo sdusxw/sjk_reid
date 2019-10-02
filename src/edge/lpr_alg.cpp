@@ -1,5 +1,5 @@
 #include "lpr_alg.h"
-#include "TH_PlateID.h"
+#include "rv_anpr_interface.h"
 #include "jpg_codec.h"
 #include <string.h>
 #include <stdio.h>
