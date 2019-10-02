@@ -40,7 +40,7 @@ int main(int argc, char ** argv)
         cout << "w:\t" << w << "\th:\t" << h << endl;
         uint8_t *y_data=(uint8_t *)malloc(w*h);
         uint8_t *uv_data=(uint8_t *)malloc(w*h/2);
-        ARGBToNV12((const uint8_t*)argb_data, w*c, y_data, w, uv_data, w, w, h);
+        libyuv::ARGBToNV12((const uint8_t*)argb_data, w*c, y_data, w, uv_data, w, w, h);
         FILE * outfile;
         outfile = fopen("p.yuv", "wb" );
         fwrite(y_data, w*h, 1, outfile);
