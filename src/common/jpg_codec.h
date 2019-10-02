@@ -45,12 +45,12 @@ typedef struct eye_jpeg_info
 {
     int jpeg_size;
     char *jpeg_data;
-    boon_jpeg_info()
+    eye_jpeg_info()
     {
         jpeg_size = 0;
         jpeg_data = NULL;
     }
-    boon_jpeg_info(int size, char *ptr)
+    eye_jpeg_info(int size, char *ptr)
     {
         jpeg_size = size;
         jpeg_data = ptr;
@@ -72,7 +72,7 @@ public:
     bool JpegUnCompress(const char * jpeg_data, int jpeg_size, char *rgb_data,
                         int rgb_size, int &w, int &h, int &c);
     bool init();
-    bool Jpegarg_read(BoonJpegConf &argu);
+    bool Jpegarg_read(EyeJpegConf &argu);
 };
 
 /* jpeg图像处理异常类 */
