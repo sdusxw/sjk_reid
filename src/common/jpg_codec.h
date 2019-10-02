@@ -14,9 +14,12 @@
      3. Date:           2017.12.02
         Author:         sxw@sdboon.com
         Modification:   增加异常处理
-    3. Date:           2019.05.01
+     3. Date:           2019.05.01
         Author:         sxw@sdboon.com
         Modification:   修改解码参数，返回width和height
+     4. Date:            2019.10.02
+        Author:         sxw@i-eye.ai
+        Modification:   修改解码参数，增加ARGB4通道解码
 **********************************************************************************/
 #ifndef _JPEG_CODEC_H
 #define _JPEG_CODEC_H
@@ -38,7 +41,7 @@ extern "C"
 #include "jpeglib.h"
 }
 
-typedef struct boon_jpeg_info
+typedef struct eye_jpeg_info
 {
     int jpeg_size;
     char *jpeg_data;
@@ -52,15 +55,15 @@ typedef struct boon_jpeg_info
         jpeg_size = size;
         jpeg_data = ptr;
     }
-} BoonJpegInfo;
+} EyeJpegInfo;
 
-class BoonJpegConf
+class EyeJpegConf
 {
 public:
     int quality;
 };
 
-class BoonJpegCodec
+class EyeJpegCodec
 {
 public:
     int Jpeg_conf_quality;

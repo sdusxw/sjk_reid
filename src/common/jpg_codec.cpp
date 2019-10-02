@@ -15,17 +15,17 @@ METHODDEF(void) jpeg_mem_error_exit(j_common_ptr cinfo)
 	throw jpeg_mem_exception(err_msg);
 }
 
-BoonJpegConf Jpeg_conf;
-void BoonJpegInitDestination(j_compress_ptr cinfo)
+EyeJpegConf Jpeg_conf;
+void EyeJpegInitDestination(j_compress_ptr cinfo)
 {
 }
 
-static boolean BoonJpegEmptyOutputBuffer(j_compress_ptr cinfo)
+static boolean EyeJpegEmptyOutputBuffer(j_compress_ptr cinfo)
 {
 	return TRUE;
 }
 
-static void BoonJpegTermDestination(j_compress_ptr cinfo)
+static void EyeJpegTermDestination(j_compress_ptr cinfo)
 {
 	//    jpegDstDataLen = jpegDstBufferLen - jpegDstManager.free_in_buffer;
 }
@@ -33,7 +33,7 @@ static void BoonJpegTermDestination(j_compress_ptr cinfo)
 /**
  Raw Rgb Data converted to Jpeg data
  */
-bool BoonJpegCodec::init()
+bool EyeJpegCodec::init()
 {
 	if (!Jpegarg_read(Jpeg_conf))
 	{
@@ -43,7 +43,7 @@ bool BoonJpegCodec::init()
 	cout << " Jpeg_conf_quality " << Jpeg_conf_quality << endl;
 	return true;
 }
-bool BoonJpegCodec::Jpegarg_read(BoonJpegConf &argu)
+bool EyeJpegCodec::Jpegarg_read(EyeJpegConf &argu)
 {
 	fstream cfg_files;
 	cfg_files.open(Jpegargu_FILES);
@@ -73,7 +73,7 @@ bool BoonJpegCodec::Jpegarg_read(BoonJpegConf &argu)
 	}
 	return true;
 }
-bool BoonJpegCodec::JpegCompress(int w, int h, const char * rgb_data,
+bool EyeJpegCodec::JpegCompress(int w, int h, const char * rgb_data,
 		int rgb_size, char * jpeg_data, int *jpeg_size, int channel)
 {
 	//cout<<"JpegCompress in"<<endl;
@@ -119,9 +119,9 @@ bool BoonJpegCodec::JpegCompress(int w, int h, const char * rgb_data,
 
 	jpegDstManager.next_output_byte = (unsigned char*) jpeg_data;
 	jpegDstManager.free_in_buffer = left_size;
-	jpegDstManager.init_destination = BoonJpegInitDestination;
-	jpegDstManager.empty_output_buffer = BoonJpegEmptyOutputBuffer;
-	jpegDstManager.term_destination = BoonJpegTermDestination;
+	jpegDstManager.init_destination = EyeJpegInitDestination;
+	jpegDstManager.empty_output_buffer = EyeJpegEmptyOutputBuffer;
+	jpegDstManager.term_destination = EyeJpegTermDestination;
 
 	jpeg_set_quality(&cinfo, Jpeg_conf_quality, TRUE);
 
@@ -144,12 +144,12 @@ bool BoonJpegCodec::JpegCompress(int w, int h, const char * rgb_data,
 	return true;
 }
 
-void BoonJpegInitSource(j_decompress_ptr cinfo)
+void EyeJpegInitSource(j_decompress_ptr cinfo)
 {
 
 }
 
-boolean BoonJpegFillInputBuffer(j_decompress_ptr cinfo)
+boolean EyeJpegFillInputBuffer(j_decompress_ptr cinfo)
 {
 	/*
 	 jpegError = true;
@@ -158,7 +158,7 @@ boolean BoonJpegFillInputBuffer(j_decompress_ptr cinfo)
 	return TRUE;
 }
 
-void BoonJpegSkipInputData(j_decompress_ptr cinfo, long num_bytes)
+void EyeJpegSkipInputData(j_decompress_ptr cinfo, long num_bytes)
 {/*
  if (num_bytes < 0 || (size_t)num_bytes > jpegSrcManager.bytes_in_buffer) {
  jpegError = true;
@@ -170,7 +170,7 @@ void BoonJpegSkipInputData(j_decompress_ptr cinfo, long num_bytes)
  }*/
 }
 
-void BoonJpegTermSource(j_decompress_ptr cinfo)
+void EyeJpegTermSource(j_decompress_ptr cinfo)
 {
 	/* No work necessary here. */
 }
@@ -183,7 +183,7 @@ void BoonJpegTermSource(j_decompress_ptr cinfo)
  if(msg_level == -1) longjmp(myerr->setjmp_buffer, 1);
  }
  */
-bool BoonJpegCodec::JpegUnCompress(const char * jpeg_data, int jpeg_size,
+bool EyeJpegCodec::JpegUnCompress(const char * jpeg_data, int jpeg_size,
 		char *rgb_data, int rgb_size, int &w, int &h, int &c)
 {
 	bool b_ret = false;
@@ -198,11 +198,11 @@ bool BoonJpegCodec::JpegUnCompress(const char * jpeg_data, int jpeg_size,
 	// 设置自定义的错误处理函数
 	jerr.error_exit = jpeg_mem_error_exit;
 
-	jpegSrcManager.init_source = BoonJpegInitSource;
-	jpegSrcManager.fill_input_buffer = BoonJpegFillInputBuffer;
-	jpegSrcManager.skip_input_data = BoonJpegSkipInputData;
+	jpegSrcManager.init_source = EyeJpegInitSource;
+	jpegSrcManager.fill_input_buffer = EyeJpegFillInputBuffer;
+	jpegSrcManager.skip_input_data = EyeJpegSkipInputData;
 	jpegSrcManager.resync_to_restart = jpeg_resync_to_restart;
-	jpegSrcManager.term_source = BoonJpegTermSource;
+	jpegSrcManager.term_source = EyeJpegTermSource;
 	jpegSrcManager.next_input_byte = (unsigned char*) jpeg_data;
 	jpegSrcManager.bytes_in_buffer = jpeg_size;
 	cinfo.src = &jpegSrcManager;
