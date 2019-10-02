@@ -6,9 +6,8 @@
 #include <sys/file.h>
 #include <fstream>
 #include <cstddef>
-/*
 #include <iconv.h>
-*/
+
 std::fstream g_log_file;
 
 std::string get_time_us()
@@ -270,7 +269,7 @@ bool split_filename(std::string filename, std::string &path, std::string &file)
  函数简介     UTF-8与GB2312转换
  
  ****************************************************************************************************************************************/
-/*
+
 int code_convert(char *from_charset, char *to_charset, char *inbuf,
                  size_t inlen, char *outbuf, size_t outlen)
 {
@@ -321,4 +320,4 @@ bool gbk2utf8(std::string gbk, std::string &utf8)
     else
         return false;
 }
-*/
+

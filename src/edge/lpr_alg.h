@@ -8,6 +8,9 @@
  1. Date:           2019.4.1
  Author：            sxw
  Modification:   首次生成文件
+ 2. Date:           2019.10.2
+ Author：            sxw@i-eye.ai
+ Modification:   修改算法调用库
  **********************************************************************************/
 #ifndef _LPR_ALG_H
 #define _LPR_ALG_H

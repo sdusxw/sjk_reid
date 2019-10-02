@@ -1,6 +1,7 @@
 #include "lpr_alg.h"
 #include "rv_anpr_interface.h"
 #include "jpg_codec.h"
+#include <libyuv.h>
 #include <string.h>
 #include <stdio.h>
 #include <iostream>
@@ -10,55 +11,27 @@ using namespace std;
 #define WIDTH           4096            // Max image width
 #define HEIGHT          2160            // Max image height
 
-TH_PlateIDCfg c_Config;
 EyeJpegCodec ejc;
 static unsigned char mem1[0x4000];                // 16K
 static unsigned char mem2[100*1024*1024];            // 100M
 
+//全局算法句柄
+void *g_lprhandle;
 //车牌识别初始化
 bool vlpr_init()
 {
-    //c_Config = c_defConfig;
-    c_Config.nMinPlateWidth = 65;
-    c_Config.nMaxPlateWidth = 220;
-    c_Config.bMovingImage = 0;
-    c_Config.bOutputSingleFrame = 1;
-    c_Config.nMaxImageWidth = WIDTH;
-    c_Config.nMaxImageHeight = HEIGHT;
-    c_Config.pFastMemory = mem1;
-    c_Config.nFastMemorySize = 0x4000;
-    c_Config.pMemory = mem2;
-    c_Config.nMemorySize= 100*1024*1024;
-    c_Config.bIsFieldImage = 0;
-    c_Config.bUTF8 = 1;
-    c_Config.bLotDetect = 0;
-    c_Config.bLeanCorrection = 1;
-    c_Config.nOrderOpt = 2;
-    c_Config.nImproveSpeed = 1;
-
-    
-    int nRet = TH_InitPlateIDSDK(&c_Config);
-    printf("init SDK ret = %d\n", nRet);
-    if(nRet!=0)
+    //打印算法版本信息
+    char  szversion[64] ={0};
+    RV_GETVERSION((unsigned char *)szversion) ;
+    printf ("version:%s\n" ,szversion);
+    //初始化算法句柄
+    g_lprhandle =   RV_CREATE_LPR(WIDTH,HEIGHT, "test");
+    if(g_lprhandle == NULL)
+    {
+        printf ("algorithm initialize error \n") ;
         return false;
-    char default_province[] = "苏";
+    }
     
-    TH_SetRecogThreshold(5,2,&c_Config);
-    TH_SetEnabledPlateFormat(PARAM_TWOROWYELLOW_ON, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_INDIVIDUAL_OFF, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_ARMPOLICE_ON, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_TWOROWARMY_OFF, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_ARMPOLICE2_OFF, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_TRACTOR_OFF, &c_Config);
-    TH_SetEnabledPlateFormat(PARAM_EMBASSY_OFF, &c_Config);
-    TH_SetImageFormat(ImageFormatRGB, 0, 1, &c_Config);
-    TH_SetEnableCarTypeClassify(0, &c_Config);
-    TH_SetEnableCarLogo( 0, &c_Config);
-    TH_SetEnableCarWidth( 0, &c_Config);
-    //TH_SetProvinceOrder((char*)default_province, &c_Config);
-    
-    //TH_SetRecogThreshold( 5, 1, &c_Config);
-    //TH_SetDayNightMode( 1, &c_Config );
     return true;
 }
 //车牌颜色转化
@@ -68,7 +41,7 @@ bool vlpr_init()
 //黑 4   3
 //绿 5   5
 //默认蓝色，没有黄绿色
-//因为目前几乎没有黑色拍照，所有黑色拍照按照烂牌处理
+//因为目前几乎没有黑色拍照，所有黑色拍照按照蓝牌处理
 int pcolor_transfer(int c)
 {
     int r=3;
@@ -94,45 +67,51 @@ int pcolor_transfer(int c)
 //车牌识别，输入为jpg图像指针和长度，输出识别结果，识别结果结构体需要调用方分配
 bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
 {
-    int w=0;int h=0; int c=3;
-    unsigned char *rgb_buf = (unsigned char *)malloc(4096*2160*3);
-    if(rgb_buf==NULL)
+    int w=0;int h=0; int c=4;
+    char *argb_buf = (char *)malloc(WIDTH*HEIGHT*4);
+    if(argb_buf==NULL)
     {
         return false;
     }
-    bool ret = bjc.JpegUnCompress((char *)pImage, len, (char *)rgb_buf,
-                                  4096*2160*3, w, h, c);
+    //JPEG转为ARGB
+    bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
+                                  WIDTH*HEIGHT*4, w, h, c);
     if(!ret)
     {
         //JPG解码失败释放缓存
-        if(rgb_buf)
+        if(argb_buf)
         {
-            free(rgb_buf);
-            rgb_buf=NULL;
+            free(argb_buf);
+            argb_buf=NULL;
         }
         return false;
     }
-    TH_PlateIDResult result[6];
-    int nResultNum=1;
-    TH_RECT roi_rect;
-    roi_rect.left= (int)w*0.05;
-    roi_rect.right=(int)w*0.95;
-    roi_rect.top = (int)h*0.1;
-    roi_rect.bottom = (int)h*0.98;
-    int nRet=TH_RecogImage(rgb_buf, w, h,  result, &nResultNum, &roi_rect, &c_Config);
-    //识别之后释放RGB缓存
-    if(rgb_buf)
+    //ARGB转为NV12
+    uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
+    uint8_t *uv_data=y_data+w*h;
+    libyuv::ARGBToNV12((const uint8_t*)argb_buf, w*c, y_data, w, uv_data, w, w, h);
+    //开始识别车牌
+    RV_ANPRRESULT anprresult[8] = { 0 }; //buff 必须大于最多识别的车牌数
+    RV_RECRECT     rectroi;
+    rectroi.left = 0; rectroi.right = w -1;
+    rectroi.top =h /4; rectroi.bottom = h - 32;
+    //识别区域 尽量避开图片上叠加的文字
+    int nPlateNum = 1;
+    int nRet = RV_RECFRAME_SINGLE(g_lprhandle ,y_data, w, h, RV_YUV420SP_UVUV , rectroi, anprresult, &nPlateNum);
+    //识别之后释放ARGB缓存
+    if(argb_buf)
     {
-        free(rgb_buf);
-        rgb_buf=NULL;
+        free(argb_buf);
+        argb_buf=NULL;
     }
     if(nRet == 0)
     {
-        if (nResultNum == 0) {
+        if (nPlateNum == 0) {
             return false;
         }
+        /*
         //车牌结果输出
-        strcpy(pVPR->license, result[0].license);
+        strcpy(pVPR->license, anprresult[0].platenum);
         //车牌颜色处理
         strcpy(pVPR->color, result[0].color);
         pVPR->nColor = pcolor_transfer(result[0].nColor);
@@ -145,6 +124,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         pVPR->right = result[0].rcLocation.right;
         pVPR->top = result[0].rcLocation.top;
         pVPR->bottom = result[0].rcLocation.bottom;
+         */
         return true;
     }
     else{
