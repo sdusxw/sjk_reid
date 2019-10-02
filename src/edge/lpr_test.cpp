@@ -4,7 +4,7 @@
 #include <time.h>
 
 #include <libyuv.h>
-#include "jpeg_codec.h"
+#include "jpg_codec.h"
 
 using namespace std;
 
