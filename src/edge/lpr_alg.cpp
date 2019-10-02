@@ -11,7 +11,7 @@ using namespace std;
 #define HEIGHT          2160            // Max image height
 
 TH_PlateIDCfg c_Config;
-BoonJpegCodec bjc;
+EyeJpegCodec ejc;
 static unsigned char mem1[0x4000];                // 16K
 static unsigned char mem2[100*1024*1024];            // 100M
 

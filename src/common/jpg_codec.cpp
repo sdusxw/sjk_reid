@@ -211,19 +211,16 @@ bool EyeJpegCodec::JpegUnCompress(const char * jpeg_data, int jpeg_size,
 	{
 		jpeg_mem_src(&cinfo, (unsigned char *) jpeg_data, jpeg_size);
 		jpeg_read_header(&cinfo, TRUE);
-		if (c == 3)
+        if (c == 4)
+            cinfo.out_color_space = JCS_EXT_XRGB;   //4通道，带Alpha透明通道
+		else if (c == 3)
 			cinfo.out_color_space = /*JCS_EXT_BGR;//*/JCS_RGB;
 		else if (c == 1)
 			cinfo.out_color_space = JCS_GRAYSCALE;
 		jpeg_start_decompress(&cinfo);
         w = cinfo.output_width;
         h = cinfo.output_height;
-		/*if (cinfo.output_width != (unsigned int) w
-				&& cinfo.output_height != (unsigned int) h)
-		{
-			jpeg_destroy_decompress(&cinfo);
-			return false;
-		}*/
+		
 		for (int dy = 0; cinfo.output_scanline < cinfo.output_height; dy++)
 		{
 			rowPointer[0] = (unsigned char *) (rgb_data + w * dy * c);
