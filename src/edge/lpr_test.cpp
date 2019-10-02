@@ -2,7 +2,7 @@
 #include <fstream>
 #include <string>
 #include <time.h>
-
+#include <stdio.h>
 #include <libyuv.h>
 #include "jpg_codec.h"
 
@@ -38,11 +38,29 @@ int main(int argc, char ** argv)
     if(ret)
     {
         cout << "w:\t" << w << "\th:\t" << h << endl;
+        uint8_t *y_data=(uint8_t *)malloc(w*h);
+        uint8_t *uv_data=(uint8_t *)malloc(w*h/2);
+        ARGBToNV12((const uint8_t*)argb_data, w*c, y_data, w, uv_data, w, w, h);
+        FILE * outfile;
+        outfile = fopen("p.yuv", "wb" );
+        fwrite(y_data, w*h, 1, outfile);
+        fwrite(uv_data, w*h/2, 1, outfile);
+        fclose(outfile);
     }
     else
         cout << "jpeg decode error!" << endl;
 }
-
+/*
+ LIBYUV_API
+ int ARGBToNV12(const uint8_t* src_argb,
+ int src_stride_argb,
+ uint8_t* dst_y,
+ int dst_stride_y,
+ uint8_t* dst_uv,
+ int dst_stride_uv,
+ int width,
+ int height);
+ */
 /*
 int main(int argc, char ** argv)
 {
