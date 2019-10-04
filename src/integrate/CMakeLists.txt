@@ -14,4 +14,4 @@ add_executable(single_reid
     single_reid.cpp
 )
 
-target_link_libraries(single_reid pthread jsoncpp common boost_thread boost_system thplateid)
+target_link_libraries(single_reid pthread jsoncpp common boost_thread boost_system lpr_alg)

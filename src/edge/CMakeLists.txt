@@ -18,7 +18,7 @@ add_executable(lpr_test
 	lpr_test.cpp
 )
 
-target_link_libraries(lpr_alg pthread common jpeg yuv)
+target_link_libraries(lpr_alg pthread common jpeg yuv vanprhardv3)
 
 target_link_libraries(lpr_test pthread common jpeg yuv)
 
