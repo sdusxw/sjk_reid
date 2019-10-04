@@ -3,7 +3,6 @@ include_directories(
     /usr/local/include
 )
 link_directories(
-    ${src_dir}/lib
     /usr/local/lib
 )
 
