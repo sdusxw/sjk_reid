@@ -77,7 +77,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     //JPEG转为ARGB
     bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
                                   WIDTH*HEIGHT*4, w, h, c);
-    std::cout << "jpg decode" << std::endl;
     if(!ret)
     {
         //JPG解码失败释放缓存
@@ -92,7 +91,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
     uint8_t *uv_data=y_data+w*h;
     libyuv::ARGBToNV12((const uint8_t*)argb_buf, w*c, y_data, w, uv_data, w, w, h);
-    std::cout << "jpg -> nv12" << std::endl;
     //开始识别车牌
     RV_ANPRRESULT anprresult[8] = { 0 }; //buff 必须大于最多识别的车牌数
     RV_RECRECT     rectroi;
@@ -101,7 +99,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     //识别区域 尽量避开图片上叠加的文字
     int nPlateNum = 1;
     int nRet = RV_RECFRAME_SINGLE(g_lprhandle ,y_data, w, h, RV_YUV420SP_UVUV , rectroi, anprresult, &nPlateNum);
-    std::cout << "recog num:\t" << nPlateNum << std::endl;
     //识别之后释放NV12缓存
     if(y_data)
     {
@@ -130,10 +127,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         gbk2utf8(pcolor_gbk, pcolor_utf8);
         strcpy(pVPR->color, pcolor_utf8.c_str());
         pVPR->nColor = pcolor_transfer(anprresult[0].platecolorindex);
-        std::cout << "nRet:\t" << nRet << std::endl;
-        std::cout << "platenum:\t" << plate_utf8 << std::endl;
-        std::cout << "platecolor:\t" << pcolor_utf8 << std::endl;
-        std::cout << "fuck" << std::endl;
         //车牌类型
         pVPR->nType = anprresult[0].platetype;
         //置信度
