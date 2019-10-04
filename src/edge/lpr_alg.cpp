@@ -114,7 +114,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         free(argb_buf);
         argb_buf=NULL;
     }
-    if(nRet == 0)
+    if(nRet >= 0)
     {
         if (nPlateNum == 0) {
             return false;
