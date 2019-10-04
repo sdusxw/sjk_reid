@@ -133,6 +133,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         std::cout << "nRet:\t" << nRet << std::endl;
         std::cout << "platenum:\t" << plate_utf8 << std::endl;
         std::cout << "platecolor:\t" << pcolor_utf8 << std::endl;
+        std::cout << "fuck" << std::endl;
         //车牌类型
         pVPR->nType = anprresult[0].platetype;
         //置信度
