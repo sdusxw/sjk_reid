@@ -37,4 +37,4 @@ SET(LIBRARY_OUTPUT_PATH ${lib_dir}/lib)
 
 add_subdirectory(common)
 add_subdirectory(edge)
-#add_subdirectory(integrate)
+add_subdirectory(integrate)
