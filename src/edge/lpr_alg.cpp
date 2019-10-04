@@ -1,6 +1,7 @@
 #include "lpr_alg.h"
 #include "rv_anpr_interface.h"
 #include "jpg_codec.h"
+#include "common.h"
 #include <libyuv.h>
 #include <string.h>
 #include <stdio.h>
@@ -98,6 +99,12 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     //识别区域 尽量避开图片上叠加的文字
     int nPlateNum = 1;
     int nRet = RV_RECFRAME_SINGLE(g_lprhandle ,y_data, w, h, RV_YUV420SP_UVUV , rectroi, anprresult, &nPlateNum);
+    //识别之后释放NV12缓存
+    if(y_data)
+    {
+        free(y_data);
+        y_data=NULL;
+    }
     //识别之后释放ARGB缓存
     if(argb_buf)
     {
@@ -109,22 +116,26 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         if (nPlateNum == 0) {
             return false;
         }
-        /*
         //车牌结果输出
-        strcpy(pVPR->license, anprresult[0].platenum);
+        std::string plate_gbk=anprresult[0].platenum;
+        std::string plate_utf8;
+        gbk2utf8(plate_gbk, plate_utf8);
+        strcpy(pVPR->license, plate_utf8.c_str());
         //车牌颜色处理
-        strcpy(pVPR->color, result[0].color);
-        pVPR->nColor = pcolor_transfer(result[0].nColor);
+        std::string pcolor_gbk=anprresult[0].platecolor;
+        std::string pcolor_utf8;
+        gbk2utf8(pcolor_gbk, pcolor_utf8);
+        strcpy(pVPR->color, pcolor_utf8.c_str());
+        pVPR->nColor = pcolor_transfer(anprresult[0].platecolorindex);
         //车牌类型
-        pVPR->nType = result[0].nType;
+        pVPR->nType = anprresult[0].platetype;
         //置信度
-        pVPR->nConfidence = result[0].nConfidence;
+        pVPR->nConfidence = anprresult[0].platereliability;
         //车牌坐标
-        pVPR->left = result[0].rcLocation.left;
-        pVPR->right = result[0].rcLocation.right;
-        pVPR->top = result[0].rcLocation.top;
-        pVPR->bottom = result[0].rcLocation.bottom;
-         */
+        pVPR->left = anprresult[0].platerect.left;
+        pVPR->right = anprresult[0].platerect.right;
+        pVPR->top = anprresult[0].platerect.top;
+        pVPR->bottom = anprresult[0].platerect.bottom;
         return true;
     }
     else{
