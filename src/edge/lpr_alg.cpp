@@ -71,6 +71,7 @@ int pcolor_transfer(int c)
 bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
 {
     int w=0;int h=0; int c=4;
+    int ww=0;int hh=0;
     char *argb_buf /*= (char *)malloc(WIDTH*HEIGHT*4)*/;
     //JPEG转为ARGB
     //bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
@@ -86,10 +87,16 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         return false;
     }
     printf ("imdecode OK \n") ;
-    w=image.cols;h=image.rows;
-    //
+    //做16字节对齐
+    ww=image.cols;hh=image.rows;
+    w=((ww-1)/16+1)*16;
+    h=((hh-1)/16+1)*16;
+    cv::Mat image_bigger(w,h,image.type(),cv::Scalar(0,0,0));
+    Mat roi=image_bigger(Rect(0,0,image.cols,image.rows));
+    image.copyTo(roi);
+    //做颜色转换 BGR->ARGB
     cv::Mat image_bgra;
-    cv::cvtColor(image, image_bgra, cv::COLOR_BGR2BGRA);
+    cv::cvtColor(image_bigger, image_bgra, cv::COLOR_BGR2BGRA);
     cv::Mat image_abgr(image_bgra.size(), image_bgra.type());
     int from_to[] = { 0,3, 1,2, 2,1, 3,0 };
     cv::mixChannels(&image_bgra,1,&image_abgr,1,from_to,4);
