@@ -1,6 +1,7 @@
 include_directories(
 	/usr/include/jsoncpp
 	${SOLUTION_INCLUDE_DIRS}
+    ${OpenCV_INCLUDE_DIRS}
 )
 link_directories(
 	${SOLUTION_LINK_DIRS}
@@ -14,4 +15,4 @@ add_executable(single_reid
     single_reid.cpp
 )
 
-target_link_libraries(single_reid pthread jsoncpp common boost_thread boost_system lpr_alg)
+target_link_libraries(single_reid pthread jsoncpp common boost_thread boost_system lpr_alg ${OpenCV_LIBS})

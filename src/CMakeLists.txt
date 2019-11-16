@@ -14,7 +14,7 @@ set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -fPIC -g -O3")
 #
 set(CMAKE_USE_RELATIVE_PATHS ON)
 
-#find_package(OpenCV REQUIRED)
+find_package(OpenCV REQUIRED)
 
 #
 set(src_dir "${PROJECT_SOURCE_DIR}")
