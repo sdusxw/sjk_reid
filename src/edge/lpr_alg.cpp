@@ -72,10 +72,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
 {
     int w=0;int h=0; int c=4;
     char *argb_buf /*= (char *)malloc(WIDTH*HEIGHT*4)*/;
-    if(argb_buf==NULL)
-    {
-        return false;
-    }
     //JPEG转为ARGB
     //bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
     //                              WIDTH*HEIGHT*4, w, h, c);
