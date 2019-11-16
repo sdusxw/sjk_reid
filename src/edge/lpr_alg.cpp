@@ -7,6 +7,9 @@
 #include <stdio.h>
 #include <iostream>
 
+#include <opencv2/opencv.hpp>
+#include <opencv2/imgcodecs.hpp>
+
 using namespace std;
 
 #define WIDTH           4096            // Max image width
@@ -69,14 +72,16 @@ int pcolor_transfer(int c)
 bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
 {
     int w=0;int h=0; int c=4;
-    char *argb_buf = (char *)malloc(WIDTH*HEIGHT*4);
+    char *argb_buf /*= (char *)malloc(WIDTH*HEIGHT*4)*/;
     if(argb_buf==NULL)
     {
         return false;
     }
     //JPEG转为ARGB
-    bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
-                                  WIDTH*HEIGHT*4, w, h, c);
+    //bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
+    //                              WIDTH*HEIGHT*4, w, h, c);
+    std::vector<char> data(pImage, len);
+    cv::Mat image = cv::imdecode(cv::Mat(data), 1);
     if(!ret)
     {
         //JPG解码失败释放缓存
