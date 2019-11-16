@@ -86,14 +86,10 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     cv::Mat image = cv::imdecode(cv::Mat(data), 1);
     if(!image.data)
     {
-        //JPG解码失败释放缓存
-        if(argb_buf)
-        {
-            free(argb_buf);
-            argb_buf=NULL;
-        }
+        printf ("imdecode error \n") ;
         return false;
     }
+    printf ("imdecode error \n") ;
     //ARGB转为NV12
     uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
     uint8_t *uv_data=y_data+w*h;
