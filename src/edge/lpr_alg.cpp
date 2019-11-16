@@ -44,7 +44,7 @@ bool vlpr_init()
 //黑 4   3
 //绿 5   5
 //默认蓝色，没有黄绿色
-//因为目前几乎没有黑色拍照，所有黑色拍照按照蓝牌处理
+//因为目前几乎没有黑色牌照，所有黑牌按照蓝牌处理
 int pcolor_transfer(int c)
 {
     int r=3;
@@ -67,6 +67,27 @@ int pcolor_transfer(int c)
     }
     return r;
 }
+//车牌颜色转化
+//蓝 1   3
+//黄 2   4
+//白 3   2
+//黑 4   3
+//绿 5   5
+//默认蓝色，没有黄绿色
+//因为目前几乎没有黑色牌照，所有黑牌按照蓝牌处理
+int pcolor_transfer_chinese(string color)
+{
+    int r=3;
+    if(color == "黄")
+        r=4;
+    else if(color == "白")
+        r=2;
+    else if(color == "黑")
+        r=3;
+    else if(color == "绿")
+        r=5;
+    return r;
+}
 //车牌识别，输入为jpg图像指针和长度，输出识别结果，识别结果结构体需要调用方分配
 bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
 {
@@ -86,7 +107,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         printf ("imdecode error \n") ;
         return false;
     }
-    printf ("imdecode OK \n") ;
     //做16字节对齐
     ww=image.cols;hh=image.rows;
     w=((ww-1)/16+1)*16;
@@ -134,7 +154,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         std::string pcolor_utf8;
         gbk2utf8(pcolor_gbk, pcolor_utf8);
         strcpy(pVPR->color, pcolor_utf8.c_str());
-        pVPR->nColor = pcolor_transfer(anprresult[0].platecolorindex);
+        pVPR->nColor = pcolor_transfer_chinese(pcolor_utf8);
         printf(" c%d ", pVPR->nColor);
         //车牌类型
         pVPR->nType = anprresult[0].platetype;
