@@ -8,7 +8,6 @@
 #include <iostream>
 
 #include <opencv2/opencv.hpp>
-#include <opencv2/imgcodecs.hpp>
 
 using namespace std;
 
@@ -82,7 +81,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     //                              WIDTH*HEIGHT*4, w, h, c);
     std::vector<char> data(pImage, len);
     cv::Mat image = cv::imdecode(cv::Mat(data), 1);
-    if(!ret)
+    if(!image.data)
     {
         //JPG解码失败释放缓存
         if(argb_buf)
