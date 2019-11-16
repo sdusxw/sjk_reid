@@ -91,7 +91,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     cv::Mat image_bgra;
     cv::cvtColor(image, image_bgra, cv::COLOR_BGR2BGRA);
     cv::Mat image_abgr(image_bgra.size(), image_bgra.type());
-    int from_to[] = { 0,3, 1,1, 2,2, 3,0 };
+    int from_to[] = { 0,3, 1,2, 2,1, 3,0 };
     cv::mixChannels(&image_bgra,1,&image_abgr,1,from_to,4);
     //ARGB转为NV12
     uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
