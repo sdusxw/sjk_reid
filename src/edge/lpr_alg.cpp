@@ -92,7 +92,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     w=((ww-1)/16+1)*16;
     h=((hh-1)/16+1)*16;
     cv::Mat image_bigger(w,h,image.type(),cv::Scalar(0,0,0));
-    cv::Mat roi=image_bigger(Rect(0,0,image.cols,image.rows));
+    cv::Mat roi=image_bigger(cv::Rect(0,0,image.cols,image.rows));
     image.copyTo(roi);
     //做颜色转换 BGR->ARGB
     cv::Mat image_bgra;
