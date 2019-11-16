@@ -79,7 +79,10 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     //JPEG转为ARGB
     //bool ret = ejc.JpegUnCompress((char *)pImage, len, (char *)argb_buf,
     //                              WIDTH*HEIGHT*4, w, h, c);
-    std::vector<char> data(pImage, len);
+    vector<unsigned char> data;
+    for (int i = 0; i < len; ++i){
+        data.push_back(pImage[i]);
+    }
     cv::Mat image = cv::imdecode(cv::Mat(data), 1);
     if(!image.data)
     {
