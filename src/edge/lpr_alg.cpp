@@ -91,6 +91,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     ww=image.cols;hh=image.rows;
     w=((ww-1)/16+1)*16;
     h=((hh-1)/16+1)*16;
+    printf("%d x %d | %d x %d\n", ww, hh, w, h);
     cv::Mat image_bigger(w,h,image.type(),cv::Scalar(0,0,0));
     cv::Mat roi=image_bigger(cv::Rect(0,0,image.cols,image.rows));
     image.copyTo(roi);
