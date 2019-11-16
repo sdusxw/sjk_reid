@@ -86,10 +86,17 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         return false;
     }
     printf ("imdecode OK \n") ;
+    w=image.cols;h=image.rows;
+    //
+    cv::Mat image_bgra;
+    cv::cvtColor(image, image_bgra, cv::COLOR_BGR2BGRA);
+    cv::Mat image_abgr(image_bgra.size(), image_bgra.type());
+    int from_to[] = { 0,3, 1,1, 2,2, 3,0 };
+    cv::mixChannels(&image_bgra,1,&image_abgr,1,from_to,4);
     //ARGB转为NV12
     uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
     uint8_t *uv_data=y_data+w*h;
-    libyuv::ARGBToNV12((const uint8_t*)argb_buf, w*c, y_data, w, uv_data, w, w, h);
+    libyuv::ARGBToNV12((const uint8_t*)image_abgr.data, w*c, y_data, w, uv_data, w, w, h);
     //开始识别车牌
     RV_ANPRRESULT anprresult[8] = { 0 }; //buff 必须大于最多识别的车牌数
     RV_RECRECT     rectroi;
@@ -103,12 +110,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     {
         free(y_data);
         y_data=NULL;
-    }
-    //识别之后释放ARGB缓存
-    if(argb_buf)
-    {
-        free(argb_buf);
-        argb_buf=NULL;
     }
     if(nRet >= 0)
     {
