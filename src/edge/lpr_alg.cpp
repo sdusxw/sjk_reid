@@ -155,7 +155,6 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         gbk2utf8(pcolor_gbk, pcolor_utf8);
         strcpy(pVPR->color, pcolor_utf8.c_str());
         pVPR->nColor = pcolor_transfer_chinese(pcolor_utf8);
-        printf(" c%d ", pVPR->nColor);
         //车牌类型
         pVPR->nType = anprresult[0].platetype;
         //置信度
