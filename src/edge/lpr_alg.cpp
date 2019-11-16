@@ -91,7 +91,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     ww=image.cols;hh=image.rows;
     w=((ww-1)/16+1)*16;
     h=((hh-1)/16+1)*16;
-    printf("%d x %d | %d x %d\n", ww, hh, w, h);
+    //printf("%d x %d | %d x %d\n", ww, hh, w, h);
     cv::Mat image_bigger(h,w,image.type(),cv::Scalar(0,0,0));
     cv::Mat roi=image_bigger(cv::Rect(0,0,image.cols,image.rows));
     image.copyTo(roi);
@@ -135,6 +135,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         gbk2utf8(pcolor_gbk, pcolor_utf8);
         strcpy(pVPR->color, pcolor_utf8.c_str());
         pVPR->nColor = pcolor_transfer(anprresult[0].platecolorindex);
+        printf(" c%d ", pVPR->nColor);
         //车牌类型
         pVPR->nType = anprresult[0].platetype;
         //置信度
