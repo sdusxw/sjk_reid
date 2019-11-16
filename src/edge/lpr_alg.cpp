@@ -93,8 +93,11 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
     h=((hh-1)/16+1)*16;
     printf("%d x %d | %d x %d\n", ww, hh, w, h);
     cv::Mat image_bigger(w,h,image.type(),cv::Scalar(0,0,0));
+    printf("fuck1\n");
     cv::Mat roi=image_bigger(cv::Rect(0,0,image.cols,image.rows));
+    printf("fuck2\n");
     image.copyTo(roi);
+    printf("fuck3\n");
     //做颜色转换 BGR->ARGB
     cv::Mat image_bgra;
     cv::cvtColor(image_bigger, image_bgra, cv::COLOR_BGR2BGRA);
