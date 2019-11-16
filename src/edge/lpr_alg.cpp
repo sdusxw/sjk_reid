@@ -85,7 +85,7 @@ bool vlpr_analyze(const unsigned char *pImage, int len, PVPR pVPR)
         printf ("imdecode error \n") ;
         return false;
     }
-    printf ("imdecode error \n") ;
+    printf ("imdecode OK \n") ;
     //ARGB转为NV12
     uint8_t *y_data=(uint8_t *)malloc((int)(w*h*1.5));
     uint8_t *uv_data=y_data+w*h;
